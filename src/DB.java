@@ -7,9 +7,9 @@ import oracle.jdbc.driver.OracleConnection;
 
 
 public class DB {
-	private static final String URL = "jdbc:oracle:thin:@localhost:1521:statmdb";
-	private static final String userName = "SYSMAN";
-	private static final String password = "router32";
+	private static final String URL = "jdbc:oracle:thin:@localhost:1521:hw2";
+	private static final String userName = "system";
+	private static final String password = "hw2";
 	
 	private static OracleConnection conn;
 	public static Statement statement;
