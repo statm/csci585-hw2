@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.EventListener;
 import java.util.EventObject;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -22,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.border.Border;
 import javax.swing.event.EventListenerList;
 import javax.swing.text.DefaultCaret;
 
@@ -172,12 +175,11 @@ public class MainWindow extends JFrame {
 		taQueryLog.setEditable(false);
 		taQueryLog.setFont(contentFont);
 		taQueryLog.setTabSize(3);
-		DefaultCaret caret = (DefaultCaret)taQueryLog.getCaret();
+		DefaultCaret caret = (DefaultCaret) taQueryLog.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
 		spQueryLog = new JScrollPane(taQueryLog);
 		spQueryLog.setBounds(10, MAP_HEIGHT + 23, 1053, 220);
 		this.add(spQueryLog);
-		
 
 		this.state = new UIState();
 	}
@@ -212,7 +214,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private int sqlCount = 1;
-	
+
 	public void pushLog() {
 		taQueryLog.setText("\n" + taQueryLog.getText());
 	}
@@ -228,7 +230,7 @@ public class MainWindow extends JFrame {
 
 		public MapLayer() {
 			try {
-				image = ImageIO.read(new File("data/map.jpg"));
+				image = ImageIO.read(new File("map.jpg"));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -376,8 +378,19 @@ public class MainWindow extends JFrame {
 		private ArrayList<Integer> polygonX;
 		private ArrayList<Integer> polygonY;
 		private boolean isDrawingPolygon;
+		
+		private JLabel lblCoordinate;
 
 		public InteractiveLayer() {
+			lblCoordinate = new JLabel();
+			Border border = BorderFactory.createLineBorder(Color.BLACK);
+			lblCoordinate.setBorder(border);
+			lblCoordinate.setOpaque(true);
+			lblCoordinate.setBackground(Color.WHITE);
+			lblCoordinate.setSize(lblCoordinate.getPreferredSize());
+			lblCoordinate.setVisible(false);
+			this.add(lblCoordinate);
+			
 			this.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseReleased(MouseEvent e) {
@@ -411,6 +424,37 @@ public class MainWindow extends JFrame {
 							}
 						}
 					}
+				}
+				
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					super.mouseEntered(e);
+					lblCoordinate.setVisible(true);
+				}
+				
+				@Override
+				public void mouseExited(MouseEvent e) {
+					super.mouseExited(e);
+					lblCoordinate.setVisible(false);
+				}
+			});
+			
+			this.addMouseMotionListener(new MouseMotionAdapter() {
+				@Override
+				public void mouseMoved(MouseEvent e) {
+					super.mouseMoved(e);
+					
+					lblCoordinate.setText(e.getX() + "," + e.getY());
+					lblCoordinate.setSize(lblCoordinate.getPreferredSize());
+					int x = e.getX();
+					int y = e.getY() + 22;
+					if (x + lblCoordinate.getWidth() > MAP_WIDTH) {
+						x = MAP_WIDTH - lblCoordinate.getWidth() - 1;
+					}
+					if (y + lblCoordinate.getHeight() > MAP_HEIGHT) {
+						y = MAP_HEIGHT - lblCoordinate.getHeight() - 1;
+					}
+					lblCoordinate.setLocation(x, y);
 				}
 			});
 		}
